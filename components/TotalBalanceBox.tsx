@@ -8,7 +8,7 @@ const TotalBalanceBox = ({
                 {/* DoughnutChart */}
             </div>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 ">
                 <h2 className="header-2">
                     Bank Accounts: {totalBanks}
                 </h2>
@@ -16,7 +16,7 @@ const TotalBalanceBox = ({
                     <p className="total-balance-label">
                         Total Current Balance
                     </p>
-                    <AnimatedCounter  amount={totalCurrentBalance} />
+                    <AnimatedCounter amount={totalCurrentBalance} />
                 </div>
             </div>
         </section>
