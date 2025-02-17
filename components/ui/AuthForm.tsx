@@ -46,7 +46,7 @@ const AuthForm = ({ type }: { type: string }) => {
    // 2. Define a submit handler.
    const onSubmit = async (data: z.infer<typeof formSchema>) => {
       // Do something with the form values.
-      // ✅ This will be type-safe and validated.
+      // This will be type-safe and validated.
       setIsLoading(true);
 
       try {
@@ -59,12 +59,12 @@ const AuthForm = ({ type }: { type: string }) => {
          }
 
          if (type === "sign-in") {
-            const response = await signIn({
-               email: data.email,
-               password: data.password
-            })
-
-            if (response) router.push("/")
+            /*  const response = await signIn({
+                email: data.email,
+                password: data.password
+             })
+ 
+             if (response) router.push("/") */
          }
       } catch (error) {
          console.log(error)
