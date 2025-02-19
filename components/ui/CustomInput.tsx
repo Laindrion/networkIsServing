@@ -1,10 +1,7 @@
 import { Button } from "@/components/ui/button"
 import {
-   Form,
    FormControl,
-   FormDescription,
    FormField,
-   FormItem,
    FormLabel,
    FormMessage,
 } from "@/components/ui/form"
@@ -16,14 +13,14 @@ import { z } from "zod"
 
 const formSchema = authFormSchema("sign-up");
 
-interface CustomInput {
+interface CustomInputProps {
    control: Control<z.infer<typeof formSchema>>,
    name: FieldPath<z.infer<typeof formSchema>>,
    label: string,
    placeholder: string
 }
 
-const CustomInput = ({ control, name, label, placeholder }) => {
+const CustomInput = ({ control, name, label, placeholder }: CustomInputProps) => {
    return (
       <FormField
          control={control}
