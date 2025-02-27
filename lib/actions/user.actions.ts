@@ -27,14 +27,16 @@ export const signUp = async (userData: SignUpParams) => {
       );
       const session = await account.createEmailPasswordSession(email, password);
 
-      cookies().set("appwrite-session", session.secret, {
+      const cookieStore = await cookies();
+
+      cookieStore.set("appwrite-session", session.secret, {
          path: "/",
          httpOnly: true,
          sameSite: "strict",
          secure: true,
       });
 
-      return parseStringify(newUserAccount);
+      return parseStringify(newUser);
    } catch (error) {
       console.error("Error", error);
    }
@@ -47,6 +49,7 @@ export async function getLoggedInUser() {
       const { account } = await createSessionClient();
       return await account.get();
    } catch (error) {
+      console.log(error);
       return null;
    }
 }
