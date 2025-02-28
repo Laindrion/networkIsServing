@@ -19,6 +19,7 @@ import { authFormSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getLoggedInUser, signIn, signUp } from '../../lib/actions/user.actions'
+import { createAdminClient } from '@/lib/appwrite'
 
 
 const AuthForm = ({ type }: { type: string }) => {
