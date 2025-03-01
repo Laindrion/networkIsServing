@@ -4,10 +4,16 @@ import { ID } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { cookies } from "next/headers";
 import { parseStringify } from "../utils";
+import { parse } from "path";
 
-export const signIn = async () => {
+export const signIn = async ({ email, password }: signInProps) => {
    try {
-      // Mutation / Database Make fetch
+      const { account } = await createAdminClient();
+
+      const response = await account.createEmailPasswordSession(email, password);
+
+      return parseStringify(response);
+
    } catch (error) {
       console.error("Error", error);
    }
@@ -27,7 +33,9 @@ export const signUp = async (userData: SignUpParams) => {
       );
       const session = await account.createEmailPasswordSession(email, password);
 
-      cookies().set("appwrite-session", session.secret, {
+      const cookieStore = await cookies();
+
+      cookieStore.set("appwrite-session", session.secret, {
          path: "/",
          httpOnly: true,
          sameSite: "strict",
@@ -45,8 +53,12 @@ export const signUp = async (userData: SignUpParams) => {
 export async function getLoggedInUser() {
    try {
       const { account } = await createSessionClient();
-      return await account.get();
+
+      const user = await account.get();
+
+      return parseStringify(user);
    } catch (error) {
-      return null;
+      console.log(error);
+      return { account: null };
    }
 }
