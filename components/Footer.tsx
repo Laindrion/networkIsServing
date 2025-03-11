@@ -13,6 +13,7 @@ const Footer = ({ user, type = "desktop" }: FooterProps) => {
          router.push("/sign-in");
       }
    }
+
    return (
       <footer className="footer">
          <div className={type === "mobile" ? "footer_name-mobile" : "footer_name"}>
