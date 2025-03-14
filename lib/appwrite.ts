@@ -8,10 +8,12 @@ export async function createSessionClient() {
 
    const client = new Client()
       .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
 
-   const session = cookieStore.get("appwrite-se1ssion");
+   const session = cookieStore.get("appwrite-session");
+   
    if (!session || !session.value) {
+      console.log(cookieStore.get("appwrite-session"));
       throw new Error("No session");
    }
 
