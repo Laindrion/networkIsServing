@@ -41,10 +41,20 @@ export const signIn = async ({ email, password }: signInProps) => {
 
       const response = await account.createEmailPasswordSession(email, password);
 
+      const cookieStore = cookies(); // Ensure cookies are set correctly
+      (await cookieStore).set("appwrite-session", response.secret, {
+         path: "/",
+         httpOnly: true,
+         sameSite: "strict",
+         secure: true,
+      });
+
+      console.log("User logged in successfully:", response);
+
       return parseStringify(response);
 
    } catch (error) {
-      console.error("Error", error);
+      console.error("Error logging in:", error);
    }
 }
 
@@ -58,8 +68,8 @@ export async function getLoggedInUser() {
 
       return parseStringify(user);
    } catch (error) {
-      console.log(error);
-      return { account: null };
+      console.log("User is not authenticated:", error);
+      return null;  // Return `null` explicitly
    }
 }
 
