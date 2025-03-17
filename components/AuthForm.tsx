@@ -24,7 +24,7 @@ import { createAdminClient } from '@/lib/appwrite';
 
 const AuthForm = ({ type }: { type: string }) => {
    const router = useRouter();
-   const [user, setUser] = useState(null);
+   const [user, setUser] = useState();
    const [isLoading, setIsLoading] = useState();
 
 
