@@ -3,7 +3,7 @@
 import { ID } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { cookies } from "next/headers";
-import { parseStringify } from "../utils";
+import { encryptId, parseStringify } from "../utils";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
 import { plaidClient } from "../plaid";
 
@@ -141,7 +141,34 @@ export const exchangePublicToken = async ({
       const processorTokenResponse = await plaidClient.processorTokenCreate(request);
       const processorToken = processorTokenResponse.data.processor_token;
 
-      // 
+      // Create a funding source URL for the account using the Dwolla Customer ID, processor token, and bank name
+      const fundingSourceUrl = await addFundingSource({
+         dwollaCustomerId: user.dwollaCustomerId,
+         processorToken,
+         bankName: accountData.name,
+      })
+
+      // If funding source Url is not created, thro an error
+      if (!fundingSourceUrl) throw Error;
+
+      // Create a bank account using the user ID, item ID, account Id, access token, funding source URL, and sharable ID
+      await createbankAccount({
+         userId: user.$id,
+         bankId: itemId,
+         accountId: accountData.account_id,
+         accessToken,
+         fundingSourceUrl,
+         sharableId: encryptId(accountData.account_id),
+      })
+
+      // Revalidate the path to reflect the changes
+      revalidatePath("/");
+
+      // Return a success message
+
+      return parseStringify({
+         publicToken: "complete",
+      })
 
    } catch (error) {
       console.error("An error occurred while creating:", error);
