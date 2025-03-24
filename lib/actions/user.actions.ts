@@ -3,16 +3,24 @@
 import { ID } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { cookies } from "next/headers";
-import { encryptId, parseStringify } from "../utils";
+import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
 import { plaidClient } from "../plaid";
 
+const {
+   APPWRITE_DATABASE_ID: DATABASE_ID,
+   APPWRITE_USER_COLLECTION_ID: USER_COLLECTION_ID,
+   APPWRITE_BANK_COLLECTION_ID: BANK_COLLECTION_ID,
+} = process.env;
+
 
 export const signUp = async (userData: SignUpParams) => {
-   try {
-      const { account } = await createAdminClient();
+   const { email, password, firstName, lastName } = userData;
 
-      const { email, password, firstName, lastName } = userData;
+   let newUserAccount;
+
+   try {
+      const { account, database } = await createAdminClient();
 
       const newUserAccount = await account.create(
          ID.unique(),
@@ -20,6 +28,29 @@ export const signUp = async (userData: SignUpParams) => {
          password,
          `${firstName} ${lastName}`
       );
+
+      if (!newUserAccount) throw new Error("Error creating user")
+
+      const dwollaCustomerUrl = await createDwollaCustomer({
+         ...userData,
+         type: "personal"
+      })
+
+      if (!dwollaCustomerUrl) throw new Error("Error creating dwolla customer")
+
+      const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+
+      const newUser = await database.createDocument(
+         DATABASE_ID!,
+         USER_COLLECTION_ID!,
+         ID.unique(),
+         {
+            ...userData,
+            userId: newUserAccount.$id,
+            dwollaCustomerId,
+            dwollaCustomerUrl,
+         }
+      )
 
       const session = await account.createEmailPasswordSession(email, password);
       const cookieStore = await cookies();
@@ -31,7 +62,7 @@ export const signUp = async (userData: SignUpParams) => {
          secure: true,
       });
 
-      return parseStringify(newUserAccount);
+      return parseStringify(newUser);
    } catch (error) {
       console.error("Error", error);
    }
@@ -87,6 +118,35 @@ export const logoutAccount = async () => {
    } catch (error) {
       console.log(error);
       return null;
+   }
+}
+
+export const createBankAccount = async ({
+   userId,
+   bankId,
+   accountId,
+   accessToken,
+   fundingSourceUrl,
+   sharableId,
+}: createBankAccountProps) => {
+   try {
+      const { database } = await createAdminClient();
+
+      const bankAccount = await database.createDocument(
+         DATABASE_ID!,
+         BANK_COLLECTION_ID!,
+         ID.unique(),
+         {
+            userId,
+            bankId,
+            accountId,
+            accessToken,
+            fundingSourceUrl,
+            sharableId,
+         }
+      )
+   } catch (error) {
+
    }
 }
 
