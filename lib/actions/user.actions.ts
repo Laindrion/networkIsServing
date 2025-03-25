@@ -1,11 +1,14 @@
 "use server";
 
-import { ID } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { cookies } from "next/headers";
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
-import { plaidClient } from "../plaid";
+
+import { plaidClient } from "@/lib/plaid";
+import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+import { revalidatePath } from "next/cache";
 
 const {
    APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -14,22 +17,22 @@ const {
 } = process.env;
 
 
-export const signUp = async (userData: SignUpParams) => {
-   const { email, password, firstName, lastName } = userData;
+export const signUp = async ({ password, ...userData }: SignUpParams) => {
+   const { email, firstName, lastName } = userData;
 
    let newUserAccount;
 
    try {
       const { account, database } = await createAdminClient();
 
-      const newUserAccount = await account.create(
+      newUserAccount = await account.create(
          ID.unique(),
          email,
          password,
          `${firstName} ${lastName}`
       );
 
-      if (!newUserAccount) throw new Error("Error creating user")
+      if (!newUserAccount) throw new Error("Error creating user");
 
       const dwollaCustomerUrl = await createDwollaCustomer({
          ...userData,
@@ -111,7 +114,7 @@ export const logoutAccount = async () => {
    try {
       const { account } = await createSessionClient();
 
-      cookies().delete("appwrite-session");
+      (await cookies()).delete("appwrite-session");
 
       await account.deleteSession("current");
 
@@ -127,7 +130,7 @@ export const createBankAccount = async ({
    accountId,
    accessToken,
    fundingSourceUrl,
-   sharableId,
+   shareableId,
 }: createBankAccountProps) => {
    try {
       const { database } = await createAdminClient();
@@ -142,11 +145,13 @@ export const createBankAccount = async ({
             accountId,
             accessToken,
             fundingSourceUrl,
-            sharableId,
+            shareableId,
          }
       )
-   } catch (error) {
 
+      return parseStringify(bankAccount);
+   } catch (error) {
+      console.log(error);
    }
 }
 
@@ -157,7 +162,7 @@ export const createLinkToken = async (user: User) => {
          user: {
             client_user_id: user.$id
          },
-         client_name: user.name,
+         client_name: `${user.firstName} ${user.lastName}`,
          products: ["auth"] as Products[],
          language: "en",
          country_codes: ["US"] as CountryCode[]
@@ -212,13 +217,13 @@ export const exchangePublicToken = async ({
       if (!fundingSourceUrl) throw Error;
 
       // Create a bank account using the user ID, item ID, account Id, access token, funding source URL, and sharable ID
-      await createbankAccount({
+      await createBankAccount({
          userId: user.$id,
          bankId: itemId,
          accountId: accountData.account_id,
          accessToken,
          fundingSourceUrl,
-         sharableId: encryptId(accountData.account_id),
+         shareableId: encryptId(accountData.account_id),
       })
 
       // Revalidate the path to reflect the changes
@@ -232,5 +237,42 @@ export const exchangePublicToken = async ({
 
    } catch (error) {
       console.error("An error occurred while creating:", error);
+   }
+}
+
+
+export const getBanks = async ({ userId }: getBanksProps) => {
+   try {
+      const { database } = await createAdminClient();
+
+      const banks = await database.listDocuments(
+         DATABASE_ID!,
+         BANK_COLLECTION_ID!,
+
+         [Query.equal("userId", [userId])]
+      )
+
+      return parseStringify(banks.documents);
+   } catch (error) {
+      console.log(error)
+   }
+}
+
+
+
+export const getBank = async ({ documentId }: getBankProps) => {
+   try {
+      const { database } = await createAdminClient();
+
+      const bank = await database.listDocuments(
+         DATABASE_ID!,
+         BANK_COLLECTION_ID!,
+
+         [Query.equal("$id", [documentId])]
+      )
+
+      return parseStringify(bank.documents[0]);
+   } catch (error) {
+      console.log(error)
    }
 }
