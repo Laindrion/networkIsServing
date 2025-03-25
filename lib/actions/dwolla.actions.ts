@@ -112,4 +112,3 @@ export const addFundingSource = async ({
       console.error("Transfer fund failed: ", err);
    }
 };
-bank.actions.ts
