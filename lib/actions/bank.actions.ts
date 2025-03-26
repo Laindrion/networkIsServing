@@ -45,7 +45,7 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
                type: accountData.type as string,
                subtype: accountData.subtype! as string,
                appwriteItemId: bank.$id,
-               shareableId: bank.sharableId,
+               shareableId: bank.shareableId,
             };
 
             return account;
@@ -76,10 +76,10 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
       const accountData = accountsResponse.data.accounts[0];
 
       // get transfer transactions from appwrite
-    /*   const transferTransactionsData = await getTransactionsByBankId({
+      const transferTransactionsData = await getTransactionsByBankId({
          bankId: bank.$id,
       });
- */
+
       const transferTransactions = transferTransactionsData.documents.map(
          (transferData: Transaction) => ({
             id: transferData.$id,
