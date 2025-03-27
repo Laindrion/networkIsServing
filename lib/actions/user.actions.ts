@@ -272,7 +272,7 @@ export const getBank = async ({ documentId }: getBankProps) => {
       )
 
       return parseStringify(bank.documents[0]);
-   } catch (error) {
+   } catch (error) { 
       console.log(error)
    }
 }
