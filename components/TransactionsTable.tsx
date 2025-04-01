@@ -1,51 +1,51 @@
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+   Table,
+   TableBody,
+   TableCaption,
+   TableCell,
+   TableHead,
+   TableHeader,
+   TableRow,
 } from "@/components/ui/table"
 import { formatAmount, getTransactionStatus } from "@/lib/utils"
 
 
 const TransactionsTable = ({ transaction }: TransactionTableProps) => {
-    return (
-        <Table>
-            <TableHeader className="bg-[#f9fafb]">
-                <TableRow>
-                    <TableHead className="px-2">Transaction</TableHead>
-                    <TableHead className="px-2">Amount</TableHead>
-                    <TableHead className="px-2">Status</TableHead>
-                    <TableHead className="px-2">Date</TableHead>
-                    <TableHead className="px-2 max-md:hidden">Channel</TableHead>
-                    <TableHead className="px-2 max-md:hidden">Category</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {transaction.map((t: Transaction) => {
-                    const status = getTransactionStatus(new Date(t.date))
-                    const amount = formatAmount(t.amount)
+   return (
+      <Table>
+         <TableHeader className="bg-[#f9fafb]">
+            <TableRow>
+               <TableHead className="px-2">Transaction</TableHead>
+               <TableHead className="px-2">Amount</TableHead>
+               <TableHead className="px-2">Status</TableHead>
+               <TableHead className="px-2">Date</TableHead>
+               <TableHead className="px-2 max-md:hidden">Channel</TableHead>
+               <TableHead className="px-2 max-md:hidden">Category</TableHead>
+            </TableRow>
+         </TableHeader>
+         <TableBody>
+            {transaction.map((t: Transaction) => {
+               const status = getTransactionStatus(new Date(t.date))
+               const amount = formatAmount(t.amount)
 
-                    const isDebit = t.type === "debit";
-                    const isCredit = t.type === "credit";
+               const isDebit = t.type === "debit";
+               const isCredit = t.type === "credit";
 
-                    return (
-                      <TableRow key={t.id}>
-                        <TableCell className="px-2">
-                            <div>
-                                <h1>
-                                    {t.name}
-                                </h1>
-                            </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                })}
-            </TableBody>
-        </Table>
-    )
+               return (
+                  <TableRow key={t.id}>
+                     <TableCell className="px-2">
+                        <div>
+                           <h1>
+                              {t.name}
+                           </h1>
+                        </div>
+                     </TableCell>
+                  </TableRow>
+               )
+            })}
+         </TableBody>
+      </Table>
+   )
 }
 
 export default TransactionsTable
