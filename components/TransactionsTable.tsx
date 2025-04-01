@@ -7,7 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { formatAmount, getTransactionStatus } from "@/lib/utils"
+import { formatAmount, getTransactionStatus, removeSpecialCharacters } from "@/lib/utils"
 
 
 const TransactionsTable = ({ transaction }: TransactionTableProps) => {
@@ -32,15 +32,15 @@ const TransactionsTable = ({ transaction }: TransactionTableProps) => {
                     const isCredit = t.type === "credit";
 
                     return (
-                      <TableRow key={t.id}>
-                        <TableCell className="px-2">
-                            <div>
-                                <h1>
-                                    {t.name}
-                                </h1>
-                            </div>
-                        </TableCell>
-                      </TableRow>
+                        <TableRow key={t.id}>
+                            <TableCell className="px-2">
+                                <div>
+                                    <h1>
+                                        {removeSpecialCharacters(t.name)}
+                                    </h1>
+                                </div>
+                            </TableCell>
+                        </TableRow>
                     )
                 })}
             </TableBody>
