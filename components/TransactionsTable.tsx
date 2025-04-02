@@ -1,11 +1,11 @@
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+   Table,
+   TableBody,
+   TableCaption,
+   TableCell,
+   TableHead,
+   TableHeader,
+   TableRow,
 } from "@/components/ui/table"
 import { formatAmount, formatDateTime, getTransactionStatus, removeSpecialCharacters } from "@/lib/utils"
 
@@ -28,8 +28,8 @@ const TransactionsTable = ({ transactions }: TransactionTableProps) => {
                     const status = getTransactionStatus(new Date(t.date))
                     const amount = formatAmount(t.amount)
 
-                    const isDebit = t.type === "debit";
-                    const isCredit = t.type === "credit";
+               const isDebit = t.type === "debit";
+               const isCredit = t.type === "credit";
 
                     return (
                         <TableRow key={t.id} className={`${isDebit || amount[0] === "-" ? "bg-[#fffbfa]" : "bg-[#f6fef9]"} !over:bg-none !border-b-DEFAULT`}>
