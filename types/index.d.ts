@@ -5,6 +5,8 @@ declare type SearchParamProps = {
    searchParams: { [key: string]: string | string[] | undefined };
 };
 
+
+
 // ========================================
 
 declare type SignUpParams = {
