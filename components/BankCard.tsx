@@ -4,7 +4,8 @@ import Image from 'next/image'
 import Copy from './copy'
 
 
-const BankCard = ({ account, userName, showBalance }: CreditCardProps) => {
+const BankCard = ({ account, userName, showBalance = true }: CreditCardProps) => {
+
    return (
       <div className="flex flex-col">
          <Link href={`/transaction-history/?id=${account.appwriteItemId}`} className="bank-card">

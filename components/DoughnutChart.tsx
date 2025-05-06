@@ -5,11 +5,14 @@ import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
-
 const DoughnutChart = ({ accounts }: DoughnutChartProps) => {
-   const accountNames = accounts.map((a) => a.name);
-   const balances = accounts.map((a) => a.currentBalance)
+
+   const flattenedAccounts = accounts.flat();
+
+   const accountNames = flattenedAccounts.map((a) => a.name);
+   const balances = flattenedAccounts.map((a) => a.currentBalance);
+
+   console.log();
 
    const data = {
       datasets: [
@@ -35,4 +38,4 @@ const DoughnutChart = ({ accounts }: DoughnutChartProps) => {
    />
 }
 
-export default DoughnutChart
+export default DoughnutChart;
